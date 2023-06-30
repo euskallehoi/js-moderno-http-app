@@ -1,6 +1,6 @@
 import './style.css';
 import javascriptLogo from './javascript.svg';
-// import { rickAndMortyApp } from './src/breakingbad/breakingbad-app';
+//import { rickAndMortyApp } from './src/breakingbad/breakingbad-app';
 import { UsersApp } from './src/ussers/ussers-app';
 
 document.querySelector('#app').innerHTML = `
@@ -21,5 +21,5 @@ document.querySelector('#app').innerHTML = `
 
 const element = document.querySelector('.card');
 
-// rickAndMortyApp( element );
+//rickAndMortyApp( element );
 UsersApp(element)
