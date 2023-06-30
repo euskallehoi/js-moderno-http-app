@@ -1,7 +1,8 @@
 import modalHtml from './render-modal.html?raw';
-import './render-modal.css';
 import { User } from '../../models/user';
 import { getUserById } from '../../use-cases/get-user-by-id';
+
+import './render-modal.css';
 
 let modal, form;
 let loadedUser = {};
@@ -14,9 +15,9 @@ export const showModal = async( id ) => {
     modal?.classList.remove('hide-modal');
     loadedUser = {};
 
-    if (!id) return;
+    if ( !id ) return;
     const user = await getUserById( id );
-    setFormValues(user)
+    setFormValues(user);
 }
 
 export const hideModal = () => {
@@ -30,7 +31,6 @@ export const hideModal = () => {
  * @param {User} user 
  */
 const setFormValues = ( user ) => {
-
     form.querySelector('[name="firstName"]').value = user.firstName;
     form.querySelector('[name="lastName"]').value = user.lastName;
     form.querySelector('[name="balance"]').value = user.balance;
@@ -38,54 +38,61 @@ const setFormValues = ( user ) => {
     loadedUser = user;
 }
 
+
+
 /**
  * 
  * @param {HTMLDivElement} element 
- * @param {(userLike)=> Promise<void>} Callback
+ * @param {(userLike)=> Promise<void> } callback
  */
-export const renderModal = ( element, Callback ) => {
+export const renderModal = ( element, callback ) => {
 
     if ( modal ) return;
 
     modal = document.createElement('div');
     modal.innerHTML = modalHtml;
     modal.className = 'modal-container hide-modal';
-    form = modal.querySelector('form')
+    form = modal.querySelector('form');
+
+
 
     modal.addEventListener('click', (event) => {
-        if (event.target.className === 'modal-container' ){
+        if ( event.target.className === 'modal-container' ) {
             hideModal();
         }
     });
 
     form.addEventListener('submit', async(event) => {
         event.preventDefault();
+        
         const formData = new FormData( form );
-        const isActive = document.querySelector('#is-active').checked;
+
+        if (!formData.get('isActive')) {
+            formData.append('isActive', 'off')
+        }
+
         const userLike = { ...loadedUser };
 
         for (const [key, value] of formData) {
-            if (key === 'balance') {
-                userLike[key] = +value;
+            if ( key === 'balance' ){
+                userLike[key] =  +value;
                 continue;
             }
 
-            if (key === 'isActive') {
-                userLike[key] = [value === 'on'] ? true:false ;    
+            if ( key === 'isActive' ) {
+                userLike[key] = (value === 'on') ? true : false;
                 continue;
             }
             
-            if (!isActive) {
-                userLike['isActive'] = false;
-                continue;
-            }
-            
-            //userLike[key] = value;
+            userLike[key] = value;
         }
 
-        await Callback( userLike );
-        hideModal();
-    })
+        // console.log(userLike);
+        await callback( userLike );
+
+        hideModal();        
+    });
+
 
     element.append( modal );
 
